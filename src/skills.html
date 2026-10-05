@@ -4,30 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+<style>
+    main {
+        margin: 2em;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1em;
+    }
+
+    .card-wrap {
+        height: 150px;
+    }
+</style>
 <body>
-    <header>
-        <a href="D:\Kuliah\Semester 5\Web\project-webpro\src\mainpage.html">
-            <div>
-                Home
-            </div>
-        </a>
-        <h1>Homebrew Skills<h1>
+    <header class="bot-seperation-line">
+      <div class="head-container">
+        <a class="logo"
+            href="mainpage.html">Vemure Homebrew</a>
+      </div>
     </header>
-    <hr>
     <main>
         <div class="grid">
-            <div>
-                <h4>
-                    <span>skill_name</span> <span>(attribute/difficulty)</span>
-                </h4>
-                <p>
-                    <i>Notes:</i>
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Obcaecati dolorem possimus rerum sint id dolore tenetur quae aliquam ad quisquam dolores, temporibus sunt a? Accusantium aliquam omnis sed sit fugit.
-                </p>
+            <div class="card-wrap">
+                <div class="card">
+                    <span class="title">
+                        <span>skill_name</span> <span>(attribute/difficulty)</span>
+                    </span>
+                    <p class="hidden-content">
+                        <i>Notes:</i>
+                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Obcaecati dolorem possimus rerum sint id dolore tenetur quae aliquam ad quisquam dolores, temporibus sunt a? Accusantium aliquam omnis sed sit fugit.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="card-wrap">
+                <div class="card">
+                    <span class="title">
+                        <span>skill_name</span> <span>(attribute/difficulty)</span>
+                    </span>
+                    <p class="hidden-content">
+                        <i>Notes:</i>
+                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Obcaecati dolorem possimus rerum sint id dolore tenetur quae aliquam ad quisquam dolores, temporibus sunt a? Accusantium aliquam omnis sed sit fugit.
+                    </p>
+                </div>
             </div>
         </div>
-        <button>add</button>
+        <a class="add-button" href="D:\Kuliah\Semester 5\Web\project-webpro\src\creation-form.html">
+            <button>+</button>
+        </a>
     </main>
 </body>
 </html>
