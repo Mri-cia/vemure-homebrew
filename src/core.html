@@ -4,32 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+<style>
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2em;
+        padding: 2em;
+    }
+    .card-wrap {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 240px;
+        height: 120px;
+    }
+</style>
 <body>
-        <header>
-        <a href="D:\Kuliah\Semester 5\Web\project-webpro\src\mainpage.html">
-            <div>
-                Home
-            </div>
-        </a>
-        <h1>Cores<h1>
+    <header class="bot-seperation-line">
+      <div class="head-container">
+        <a class="logo"
+            href="mainpage.html">Vemure Homebrew</a>
+      </div>
     </header>
-    <hr>
     <main>
         <div class="grid">
-            <div>
-                <h4>
-                    <span>mechanic_name</span> 
-                    <br>
-                    <span>type </span>
-                </h4>
-                <p>
-                    <i>Notes:</i>
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Obcaecati dolorem possimus rerum sint id dolore tenetur quae aliquam ad quisquam dolores, temporibus sunt a? Accusantium aliquam omnis sed sit fugit.
-                </p>
+            <div class="card-wrap">
+                <div class="card">
+                    <h4>
+                        <span>mechanic_name</span> 
+                        <br>
+                        <span>type </span>
+                    </h4>
+                    <p class="hidden-content">
+                        <i>Notes:</i>
+                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Obcaecati dolorem possimus rerum sint id dolore tenetur quae aliquam ad quisquam dolores, temporibus sunt a? Accusantium aliquam omnis sed sit fugit.
+                    </p>
+                </div>
             </div>
         </div>
-        <button>add</button>
+        <a class="add-button"
+            href="D:\Kuliah\Semester 5\Web\project-webpro\src\creation-form.html">
+            <button>+</button>
+        </a>
     </main>
 </body>
 </html>
