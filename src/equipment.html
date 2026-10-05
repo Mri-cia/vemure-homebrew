@@ -4,19 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vemure Homebrew</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+<style>
+
+    nav {
+        margin: 1.2em 2em;
+        display:grid;
+        grid-template-columns: repeat(3, 1fr);
+        justify-items: center;
+        border: 1px solid rgb(var(--secondary-color) / 0.5);
+    }
+
+    nav div {
+        width: 100%;
+        padding: 0.5em 0;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    nav div:hover {
+        cursor: pointer;
+        background-color: rgb(var(--accent-color) / 0.3);
+        transition: 0.3s;
+    }
+
+    nav div.active {
+        background-color: rgb(var(--accent-color));
+        color: rgb(var(--primary-color));
+    }
+
+
+</style>
 <body>
-    <header>
-        <a href="D:\Kuliah\Semester 5\Web\project-webpro\src\mainpage.html">
-            <div>
-                Home
-            </div>
-        </a>
-        <h1>Homebrew Weapons<h1>
+    <header class="bot-seperation-line">
+      <div class="head-container">
+        <a class="logo"
+            href="mainpage.html">Vemure Homebrew</a>
+      </div>
     </header>
-    <hr/>
     <nav>
-        <div>Melee</div>
+        <div class="active">Melee</div>
         <div>Ranged</div>
         <div>Ammunition</div>
     </nav>
@@ -35,8 +63,9 @@
         </table>
     </main>
     <footer>
-        <a href="D:\Kuliah\Semester 5\Web\project-webpro\src\creation-form.html">
-            <button>Add</button>
+        <a class="add-button"
+            href="D:\Kuliah\Semester 5\Web\project-webpro\src\creation-form.html">
+            <button>+</button>
         </a>
     </footer>
 
