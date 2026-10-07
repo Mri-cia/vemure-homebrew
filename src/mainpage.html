@@ -4,25 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="output.css">
   </head>
   <style>
-    main {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: calc(100vh - 120px);
-    }
-
-    .main-container {
-      padding: 0 2em;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      align-items: center;
-      gap: 3em;
-      height: 100%;
-    }
-
     .card-wrap {
       display: flex;
       justify-content: center;
@@ -32,9 +17,6 @@
     }
 
     @media (max-width: 1030px) {
-      .main-container {
-        grid-template-columns: repeat(2, 1fr);
-      }
       .card-wrap {
         width: 280px;
         height: 160px;
@@ -48,8 +30,8 @@
             href="mainpage.html">Vemure Homebrew</a>
       </div>
     </header>
-    <main>
-      <div class="main-container">
+    <main class="w-full h-[calc(100vh-120px)]">
+      <div class="w-full h-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 items-center gap-4 p-16">
         <div class="card-wrap">
           <a
             class="card"
