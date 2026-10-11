@@ -9,16 +9,6 @@
     <link rel="stylesheet" href="output.css">
 </head>
 <style>
-    main {
-        margin: 2em;
-    }
-
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1em;
-    }
-
     .card-wrap {
         height: 150px;
     }
@@ -30,8 +20,8 @@
             href="mainpage.html">Vemure Homebrew</a>
       </div>
     </header>
-    <main>
-        <div class="grid">
+    <main class="m-8">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
             <div class="card-wrap">
                 <div class="card">
                     <span class="title">
