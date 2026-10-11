@@ -5,17 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vemure Homebrew</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="output.css">
 </head>
 <style>
-
-    nav {
-        margin: 1.2em 2em;
-        display:grid;
-        grid-template-columns: repeat(3, 1fr);
-        justify-items: center;
-        border: 1px solid rgb(var(--secondary-color) / 0.5);
-    }
-
     nav div {
         width: 100%;
         padding: 0.5em 0;
@@ -43,7 +35,7 @@
             href="mainpage.html">Vemure Homebrew</a>
       </div>
     </header>
-    <nav>
+    <nav class="my-6 mx-8 grid grid-cols-3 border bg-(rgb(var(--secondary-color) / 0.5))">
         <div class="active">Melee</div>
         <div>Ranged</div>
         <div>Ammunition</div>
