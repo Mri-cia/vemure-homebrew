@@ -4,16 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="output.css">
 </head>
 <style>
-
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 2em;
-        padding: 2em;
-    }
     .card-wrap {
         display: flex;
         justify-content: center;
@@ -30,7 +25,7 @@
       </div>
     </header>
     <main>
-        <div class="grid">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-8">
             <div class="card-wrap">
                 <div class="card">
                     <h4>
@@ -45,9 +40,10 @@
                 </div>
             </div>
         </div>
-        <a class="add-button"
-            href="D:\Kuliah\Semester 5\Web\project-webpro\src\creation-form.html">
-            <button>+</button>
+        <a class="add-button" href="D:\Kuliah\Semester 5\Web\project-webpro\src\creation-form.html">
+            <span class="material-symbols-outlined font-bold!">
+                add
+            </span>
         </a>
     </main>
 </body>
