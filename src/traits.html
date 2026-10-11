@@ -4,25 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="output.css">
 </head>
 <style>
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 2em;
-        padding: 0 2em;
-    }
-    
-
-    nav {
-        margin: 1.2em 2em;
-        display:grid;
-        grid-template-columns: repeat(3, 1fr);
-        justify-items: center;
-        border: 1px solid rgb(var(--secondary-color) / 0.5);
-    }
-
     nav div {
         width: 100%;
         padding: 0.5em 0;
@@ -49,13 +35,13 @@
       </div>
     </header>
     
-    <nav>
+    <nav class="my-6 mx-8 grid grid-cols-3 border border-[rgb(var(--accent-color),0.5)]">
         <div class="active">Advantage</div>
         <div>Disadvantage</div>
         <div>Quirk</div>
     </nav>
     <main>
-        <div class="grid">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 px-8">
             <div class="card-wrap">
                 <div class="card">
                     <h4>
@@ -72,7 +58,9 @@
 
         </div>
         <a class="add-button" href="D:\Kuliah\Semester 5\Web\project-webpro\src\creation-form.html">
-            <button>+</button>
+            <span class="material-symbols-outlined font-bold!">
+                add
+            </span>
         </a>
     </main>
 </body>
