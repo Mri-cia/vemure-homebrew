@@ -1,4 +1,4 @@
-import Card from "../elements/cards";
+import { Card }from "../elements/cards";
 
 export default function HomePage() {
   const itemList = [
@@ -8,11 +8,11 @@ export default function HomePage() {
       desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non faucibus lacus. Curabitur at libero ut elit cursus cursus. Vestibulum mi lectus, pulvinar eget consectetur eget, tincidunt eu quam.",
     },
     { nama: "Skills",
-      link: '/equipment',
+      link: '/skills',
       desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non faucibus lacus. Curabitur at libero ut elit cursus cursus. Vestibulum mi lectus, pulvinar eget consectetur eget, tincidunt eu quam.",
     },
     { nama: "Traits",
-      link: '/equipment',
+      link: '/traits',
       desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non faucibus lacus. Curabitur at libero ut elit cursus cursus. Vestibulum mi lectus, pulvinar eget consectetur eget, tincidunt eu quam.",
     },
     { nama: "Core",

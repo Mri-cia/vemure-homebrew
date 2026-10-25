@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
-function Card({ title, description, link}) {
+function Card({ title, description, link }) {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -19,9 +19,11 @@ function Card({ title, description, link}) {
         ${isOpen ? "z-10 h-full" : "z-0 h-[100px]"}
         `}
     >
-      <div onClick={() => setIsOpen((prev) => !prev)} 
+      <div
+        onClick={() => setIsOpen((prev) => !prev)}
         className={`py-8 w-full text-center
-            ${isOpen ? "opacity-50 bg-(--card-mask) hover:opacity-100 text-(--primary-color)" : ""}`}>
+            ${isOpen ? "opacity-50 bg-(--card-mask) hover:opacity-100 text-(--primary-color)" : ""}`}
+      >
         <p className="font-bold text-xl">{title}</p>
       </div>
 
@@ -33,14 +35,28 @@ function Card({ title, description, link}) {
         <div className="overflow-hidden">
           <p className="py-2">{description}</p>
         </div>
-        <Link to={link}
-          className={`absolute bottom-0 w-full h-20 ${isOpen ? 'flex justify-center items-center' : 'hidden'}`}>
-            <span>Detail</span>
-            <ArrowRight/>
+        <Link
+          to={link}
+          className={`absolute bottom-0 w-full h-20 ${isOpen ? "flex justify-center items-center" : "hidden"}`}
+        >
+          <span>Detail</span>
+          <ArrowRight />
         </Link>
       </div>
     </div>
   );
 }
 
-export default Card;
+function CardRender({ children }) {
+  return (
+    <div
+      className="h-[120px] flex flex-col justify-center items-center
+              border border-(--border) bg-(--card-bg) text-xl cursor-pointer
+              hover:brightness-110"
+    >
+      {children}
+    </div>
+  );
+}
+
+export { Card, CardRender};
