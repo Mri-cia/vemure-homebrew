@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { ArrowRight } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
-function Card({ title, description }) {
+function Card({ title, description, link}) {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleOpen = () => {
     setIsOpen(!isOpen);
@@ -31,10 +33,11 @@ function Card({ title, description }) {
         <div className="overflow-hidden">
           <p className="py-2">{description}</p>
         </div>
-        <div className={`absolute bottom-0 w-full h-20 gap-2 hover:gap-3 ${isOpen ? 'flex justify-center items-center' : 'hidden'}`}>
+        <Link to={link}
+          className={`absolute bottom-0 w-full h-20 ${isOpen ? 'flex justify-center items-center' : 'hidden'}`}>
             <span>Detail</span>
             <ArrowRight/>
-        </div>
+        </Link>
       </div>
     </div>
   );

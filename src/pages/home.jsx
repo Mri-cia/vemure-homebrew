@@ -4,15 +4,19 @@ export default function HomePage() {
   const itemList = [
     {
       nama: "Equipment",
+      link: '/equipment',
       desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non faucibus lacus. Curabitur at libero ut elit cursus cursus. Vestibulum mi lectus, pulvinar eget consectetur eget, tincidunt eu quam.",
     },
     { nama: "Skills",
+      link: '/equipment',
       desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non faucibus lacus. Curabitur at libero ut elit cursus cursus. Vestibulum mi lectus, pulvinar eget consectetur eget, tincidunt eu quam.",
     },
     { nama: "Traits",
+      link: '/equipment',
       desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non faucibus lacus. Curabitur at libero ut elit cursus cursus. Vestibulum mi lectus, pulvinar eget consectetur eget, tincidunt eu quam.",
     },
     { nama: "Core",
+      link: '/equipment',
       desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non faucibus lacus. Curabitur at libero ut elit cursus cursus. Vestibulum mi lectus, pulvinar eget consectetur eget, tincidunt eu quam.",
     },
   ];
@@ -21,7 +25,7 @@ export default function HomePage() {
       {itemList.map((i) => (
         <div className="h-120 flex justify-center items-center">
           <div className="relative w-[210px] h-full">
-            <Card key={i.nama} title={i.nama} description={i.desc} />
+            <Card key={i.nama} title={i.nama} description={i.desc} link={i.link} />
           </div>
         </div>
       ))}
