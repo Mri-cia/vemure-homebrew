@@ -1,6 +1,6 @@
 ﻿models:
   Trait:
-    id: integer
+    id: int
     trait_name: string
     type: string
     category: string
