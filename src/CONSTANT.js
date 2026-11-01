@@ -6,7 +6,7 @@ export const API = {
         get: "/traits",
         getById: (id) => `/traits/${id}`,
         getByType: (type) => `/traits?type_eq=${type}`,
-        getByCategory: (category) => `/tras?category_eq=${category}`,
+        getByCategory: (category) => `/traits?category_eq=${category}`,
     }
 
   }
