@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTraits } from "../hooks/useTraits";
 import FilterTabs from "../elements/tabs";
 import TraitsData from "../../data/gurps_traits.json";
 import { CardRender } from "../elements/cards";
@@ -22,7 +23,7 @@ function validateTrait(form, existingTraits) {
     errors.trait_name = "Name must be 50 characters or fewer.";
   } else if (
     existingTraits.some(
-      (t) => t.trait_name.toLowerCase() === name.toLowerCase()
+      (t) => t.trait_name.toLowerCase() === name.toLowerCase(),
     )
   ) {
     errors.trait_name = "A trait with this name already exists.";
@@ -46,9 +47,12 @@ export default function TraitsPage() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [errors, setErrors] = useState({});
 
-  const filteredTraits = traits.filter(
-    (t) => t.category.toLowerCase() === tab.toLowerCase()
-  );
+  const {
+    traits: filteredTraits,
+    loading,
+    error,
+    reloadTraits,
+  } = useTraits({ category: tab.toLowerCase() });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -68,18 +72,18 @@ export default function TraitsPage() {
     const found = validateTrait(form, traits);
     if (Object.keys(found).length > 0) {
       setErrors(found);
-      return; 
+      return;
     }
 
     const newTrait = {
       trait_name: form.trait_name.trim(),
       type: form.type,
-      category: form.category.toLowerCase(), 
+      category: form.category.toLowerCase(),
       notes: "",
     };
 
     setTraits((prev) => [...prev, newTrait]);
-    setTab(form.category); 
+    setTab(form.category);
     closeModal();
   };
 
@@ -89,14 +93,32 @@ export default function TraitsPage() {
         <FilterTabs tabs={TABS} active={tab} tabChange={setTab} />
       </div>
 
-      <div className="grid grid-cols-[repeat(auto-fill,210px)] gap-4 justify-center">
-        {filteredTraits.map((t) => (
-          <CardRender key={t.trait_name}>
-            <p className="text-base">{t.trait_name}</p>
-            <p className="text-base italic">{t.type}</p>
-          </CardRender>
-        ))}
-      </div>
+      {loading && (
+        <div className="text-center">
+          <p>Loading traits...</p>
+        </div>
+      )}
+      {error && (
+        <div className="flex flex-col items-center justify-center gap-4">
+          <p className="text-red-500 text-center">{error}</p>
+          <button
+            className="bg-orange-800 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"
+            onClick={reloadTraits}
+          >
+            Retry
+          </button>
+        </div>
+      )}
+      {!loading && !error && (
+        <div className="grid grid-cols-[repeat(auto-fill,210px)] gap-4 justify-center">
+          {filteredTraits.map((t) => (
+            <CardRender key={t.id}>
+              <p className="text-base">{t.trait_name}</p>
+              <p className="text-base italic">{t.type}</p>
+            </CardRender>
+          ))}
+        </div>
+      )}
 
       <FloatAddButton onClick={() => setModal(Status.OPEN)} />
 
