@@ -180,11 +180,11 @@ export default function SkillsPage() {
         SkillsData.length === 0 ? (
           <p className="text-center text-(--text-muted)">No skills found.</p>
         ) : (
-        <div className=" grid grid-cols-[repeat(auto-fill,210px)] gap-4 justify-center">
+        <div className="px-4 pb-24 grid grid-cols-[repeat(auto-fill,210px)] gap-4 justify-center">
           {SkillsData.map((t, index) => (
             <CardRender key={t.id ?? index}>
               <div
-                className="w-full h-full px-4 flex flex-col justify-center items-center text-center cursor-pointer"
+                className="w-full h-full px-6 flex flex-col justify-center items-center text-center cursor-pointer"
                 onClick={() => openEdit(t)}
               >
                 <p className="text-base font-medium line-clamp-2 break-words">{t.skill_name}</p>
@@ -196,7 +196,8 @@ export default function SkillsPage() {
                 )}
               </div>
               <button
-                className="absolute top-1 right-2 text-red-500 text-xs hover:text-red-300"
+                aria-label={`Delete ${t.skill_name}`}
+                className="absolute top-0.5 right-1 p-1.5 text-red-500 text-sm hover:text-red-300"
                 onClick={(e) => {
                   e.stopPropagation();
                   setDeleteError(null);
@@ -212,8 +213,8 @@ export default function SkillsPage() {
       )}
 
       {confirmDelete !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="border border-(--secondary-color) bg-(--primary-color) p-6 flex flex-col gap-4">
+        <div className="fixed inset-0 z-50 p-4 flex items-center justify-center bg-black/40">
+          <div className="w-full max-w-sm border border-(--secondary-color) bg-(--primary-color) p-6 flex flex-col gap-4">
             <p>Delete this skill?</p>
             {deleteError && <p className="text-sm text-red-500">{deleteError}</p>}
             <div className="flex justify-end gap-4">

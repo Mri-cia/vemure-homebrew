@@ -5,14 +5,14 @@ export default function Modal({ children, status, onClose }) {
 
   return (
     <div
-      className={`fixed inset-0 z-50 items-center justify-center bg-black/40 ${
+      className={`fixed inset-0 z-50 p-4 items-center justify-center bg-black/40 ${
         isOpen ? "flex" : "hidden"
       }`}
       onClick={onClose}
     >
       {/* e.stopPropagation() is required here so clicking inside the modal doesn't trigger onClose */}
       <div
-        className="relative min-w-100 min-h-120 max-h-[90vh] overflow-y-auto border border-(--secondary-color) bg-(--primary-color)"
+        className="relative w-full max-w-100 sm:min-w-100 min-h-120 max-h-[90vh] overflow-y-auto border border-(--secondary-color) bg-(--primary-color)"
         onClick={(e) => e.stopPropagation()}
       >
         {children}

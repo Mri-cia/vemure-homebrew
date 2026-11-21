@@ -15,30 +15,34 @@ export default function EquipmentPage() {
     <div className="relative min-h-[calc(100vh-83px)]">
         <FilterTabs tabs={TABS} active={activeFilter} tabChange={setActiveFilter} />
 
-      <div
-        className={`px-12 h-[38px] grid ${GRID} items-center
-          border-t border-t-(--line) border-b border-b-(--primary-color) font-bold text-xl`}
-      >
-        {COLUMNS.map((c) => (
-          <span key={c}>{c}</span>
-        ))}
-      </div>
+      <div className="overflow-x-auto">
+        <div className="min-w-[640px]">
+          <div
+            className={`px-4 sm:px-12 h-[38px] grid ${GRID} items-center
+              border-t border-t-(--line) border-b border-b-(--primary-color) font-bold text-sm sm:text-xl`}
+          >
+            {COLUMNS.map((c) => (
+              <span key={c}>{c}</span>
+            ))}
+          </div>
 
-      {rows.map((row) => (
-        <div
-          key={row.id}
-          className={`px-12 py-2 grid ${GRID} border-b border-(--border) hover:bg-(--card-bg)`}
-        >
-          <span>{row.id}</span>
-          <span>{row.name}</span>
-          <span>{row.damage}</span>
-          <span>{row.parry}</span>
-          <span>{row.st}</span>
-          <span>{row.cost}</span>
-          <span>{row.weight}</span>
-          <span>{row.tl}</span>
+          {rows.map((row) => (
+            <div
+              key={row.id}
+              className={`px-4 sm:px-12 py-2 grid ${GRID} text-sm sm:text-base border-b border-(--border) hover:bg-(--card-bg)`}
+            >
+              <span>{row.id}</span>
+              <span>{row.name}</span>
+              <span>{row.damage}</span>
+              <span>{row.parry}</span>
+              <span>{row.st}</span>
+              <span>{row.cost}</span>
+              <span>{row.weight}</span>
+              <span>{row.tl}</span>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
 
       <FloatAddButton/>
     </div>
