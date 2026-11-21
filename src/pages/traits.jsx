@@ -45,6 +45,9 @@ export default function TraitsPage() {
   const [editingId, setEditingId] = useState(null);
   const [serverError, setServerError] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [deleteError, setDeleteError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const {
     traits: filteredTraits,
@@ -68,10 +71,12 @@ export default function TraitsPage() {
     setErrors({});
     setEditingId(null);
     setServerError(null);
+    setIsSubmitting(false);
   };
 
   const openAdd = () => {
-    setForm(EMPTY_FORM);
+    setForm({ ...EMPTY_FORM, category: tab });
+    setErrors({});
     setEditingId(null);
     setServerError(null);
     setModal(Status.OPEN);
@@ -84,6 +89,7 @@ export default function TraitsPage() {
       type: trait.type,
       notes: trait.notes || "",
     });
+    setErrors({});
     setEditingId(trait.id);
     setServerError(null);
     setModal(Status.OPEN);
@@ -91,6 +97,8 @@ export default function TraitsPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setServerError(null);
 
     const found = validateTrait(form);
     if (Object.keys(found).length > 0) {
@@ -98,9 +106,14 @@ export default function TraitsPage() {
       return;
     }
 
+    setIsSubmitting(true);
     try {
       if (editingId !== null) {
         const original = filteredTraits.find((t) => t.id === editingId);
+        if (!original) {
+          setServerError("Selected trait no longer exists.");
+          return;
+        }
         const normalizedForm = {
           trait_name: form.trait_name.trim(),
           type: form.type,
@@ -128,15 +141,22 @@ export default function TraitsPage() {
       closeModal();
     } catch (err) {
       setServerError(err.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleDelete = async (id) => {
+    if (isDeleting) return;
+    setDeleteError(null);
+    setIsDeleting(true);
     try {
       await deleteTrait(id);
       setConfirmDelete(null);
     } catch (err) {
-      setServerError(err.message);
+      setDeleteError(err.message);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -151,7 +171,7 @@ export default function TraitsPage() {
           <p>Loading traits...</p>
         </div>
       )}
-      {error && (
+      {!loading && error && (
         <div className="flex flex-col items-center justify-center gap-4">
           <p className="text-red-500 text-center">{error}</p>
           <button
@@ -163,20 +183,24 @@ export default function TraitsPage() {
         </div>
       )}
       {!loading && !error && (
+        filteredTraits.length === 0 ? (
+          <p className="text-center text-(--text-muted)">No traits found.</p>
+        ) : (
         <div className="grid grid-cols-[repeat(auto-fill,210px)] gap-4 justify-center">
           {filteredTraits.map((t) => (
             <CardRender key={t.id}>
               <div
-                className="w-full h-full flex flex-col justify-center items-center cursor-pointer"
+                className="w-full h-full px-4 flex flex-col justify-center items-center text-center cursor-pointer"
                 onClick={() => openEdit(t)}
               >
-                <p className="text-base">{t.trait_name}</p>
-                <p className="text-base italic">{t.type}</p>
+                <p className="text-base font-medium line-clamp-2 break-words">{t.trait_name}</p>
+                <p className="text-sm italic text-(--text-muted)">{t.type}</p>
               </div>
               <button
                 className="absolute top-1 right-2 text-red-500 text-xs hover:text-red-300"
                 onClick={(e) => {
                   e.stopPropagation();
+                  setDeleteError(null);
                   setConfirmDelete(t.id);
                 }}
               >
@@ -185,25 +209,28 @@ export default function TraitsPage() {
             </CardRender>
           ))}
         </div>
+        )
       )}
 
       {confirmDelete !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="border border-(--secondary-color) bg-(--primary-color) p-6 flex flex-col gap-4">
             <p>Delete this trait?</p>
-            {serverError && <p className="text-sm text-red-500">{serverError}</p>}
+            {deleteError && <p className="text-sm text-red-500">{deleteError}</p>}
             <div className="flex justify-end gap-4">
               <button
                 className="border border-(--border) p-2"
-                onClick={() => { setConfirmDelete(null); setServerError(null); }}
+                disabled={isDeleting}
+                onClick={() => { setConfirmDelete(null); setDeleteError(null); }}
               >
                 Cancel
               </button>
               <button
-                className="border border-(--border) p-2 text-red-500"
+                className="border border-(--border) p-2 text-red-500 disabled:opacity-50"
+                disabled={isDeleting}
                 onClick={() => handleDelete(confirmDelete)}
               >
-                Delete
+                {isDeleting ? "Deleting..." : "Delete"}
               </button>
             </div>
           </div>
@@ -307,12 +334,17 @@ export default function TraitsPage() {
             <button
               type="button"
               onClick={closeModal}
+              disabled={isSubmitting}
               className="border border-(--border) p-2"
             >
               Cancel
             </button>
-            <button type="submit" className="border border-(--border) p-2">
-              Submit
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="border border-(--border) p-2 disabled:opacity-50"
+            >
+              {isSubmitting ? "Saving..." : "Submit"}
             </button>
           </div>
         </form>

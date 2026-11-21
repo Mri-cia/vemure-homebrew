@@ -1,62 +1,60 @@
 import { useState, useEffect, useCallback } from "react";
 import { getTraits, getTraitByCategory, createTrait, updateTrait, removeTrait } from "../api/trait";
 
-
-export function useTraits({ category = null }) {
+export function useTraits({ category = null } = {}) {
   const [traits, setTraits] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isReload, setIsReload] = useState(false);
+  const [errorState, setErrorState] = useState(null);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [resolvedRequest, setResolvedRequest] = useState(null);
+
+  const requestKey = `${category ?? ""}:${reloadKey}`;
+  const loading = resolvedRequest !== requestKey;
+  const error = errorState?.key === requestKey ? errorState.message : null;
 
   useEffect(() => {
-    if (category) {
-      getTraitByCategory(category)
-        .then((data) => {
-          setTraits(data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          setError(err.message);
-          setLoading(false);
-        });
-    } else {
-      getTraits()
-        .then((data) => {
-          setTraits(data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          setError(err.message);
-          setLoading(false);
-        });
-    }
+    let cancelled = false;
+    const fetchTraits = category ? getTraitByCategory(category) : getTraits();
 
-    setIsReload(false);
-  }, [category, isReload]);
+    fetchTraits
+      .then((data) => {
+        if (cancelled) return;
+        setTraits(data);
+        setErrorState(null);
+        setResolvedRequest(requestKey);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setErrorState({ key: requestKey, message: err.message });
+        setResolvedRequest(requestKey);
+      });
 
-  const reloadTraits = () => {
-    setIsReload(true);
-    setLoading(true);
-    setError(null);
-  }
+    return () => {
+      cancelled = true;
+    };
+  }, [category, requestKey]);
+
+  const reloadTraits = useCallback(() => {
+    setErrorState(null);
+    setReloadKey((k) => k + 1);
+  }, []);
 
   const addTrait = useCallback(async (data) => {
     const created = await createTrait(data);
     reloadTraits();
     return created;
-  }, []);
+  }, [reloadTraits]);
 
   const editTrait = useCallback(async (id, data) => {
     const updated = await updateTrait(id, data);
     reloadTraits();
     return updated;
-  }, []);
+  }, [reloadTraits]);
 
   const deleteTrait = useCallback(async (id) => {
     const deleted = await removeTrait(id);
     reloadTraits();
     return deleted;
-  }, []);
+  }, [reloadTraits]);
 
   return { traits, loading, error, reloadTraits, addTrait, editTrait, deleteTrait };
 }
