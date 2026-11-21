@@ -50,6 +50,9 @@ export default function SkillsPage() {
   const [editingId, setEditingId] = useState(null);
   const [serverError, setServerError] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [deleteError, setDeleteError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -63,10 +66,12 @@ export default function SkillsPage() {
     setErrors({});
     setEditingId(null);
     setServerError(null);
+    setIsSubmitting(false);
   };
 
   const openAdd = () => {
     setForm(EMPTY_FORM);
+    setErrors({});
     setEditingId(null);
     setServerError(null);
     setModal(Status.OPEN);
@@ -80,6 +85,7 @@ export default function SkillsPage() {
       notes: skill.notes || "",
       requires_specialization: skill.requires_specialization || false,
     });
+    setErrors({});
     setEditingId(skill.id);
     setServerError(null);
     setModal(Status.OPEN);
@@ -87,6 +93,8 @@ export default function SkillsPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setServerError(null);
 
     const found = validateSkill(form);
     if (Object.keys(found).length > 0) {
@@ -94,13 +102,26 @@ export default function SkillsPage() {
       return;
     }
 
+    setIsSubmitting(true);
     try {
       if (editingId !== null) {
         const original = SkillsData.find((s) => s.id === editingId);
+        if (!original) {
+          setServerError("Selected skill no longer exists.");
+          return;
+        }
+        const normalizedForm = {
+          skill_name: form.skill_name.trim(),
+          attribute: form.attribute,
+          difficulty: form.difficulty,
+          notes: form.notes,
+          requires_specialization: form.requires_specialization,
+        };
         const changed = {};
         for (const key of ["skill_name", "attribute", "difficulty", "notes", "requires_specialization"]) {
-          if (form[key] !== (original[key] ?? (key === "requires_specialization" ? false : ""))) {
-            changed[key] = key === "skill_name" ? form[key].trim() : form[key];
+          const originalValue = original[key] ?? (key === "requires_specialization" ? false : "");
+          if (normalizedForm[key] !== originalValue) {
+            changed[key] = normalizedForm[key];
           }
         }
         if (Object.keys(changed).length > 0) {
@@ -118,15 +139,22 @@ export default function SkillsPage() {
       closeModal();
     } catch (err) {
       setServerError(err.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleDelete = async (id) => {
+    if (isDeleting) return;
+    setDeleteError(null);
+    setIsDeleting(true);
     try {
       await deleteSkill(id);
       setConfirmDelete(null);
     } catch (err) {
-      setServerError(err.message);
+      setDeleteError(err.message);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -134,7 +162,7 @@ export default function SkillsPage() {
     <div className="relative min-h-[calc(100vh-83px)] py-5">
       {loading && (
         <div className="text-center">
-          <p>Loading traits...</p>
+          <p>Loading skills...</p>
         </div>
       )}
       {error && (
@@ -149,23 +177,29 @@ export default function SkillsPage() {
         </div>
       )}
       {!loading && !error && (
+        SkillsData.length === 0 ? (
+          <p className="text-center text-(--text-muted)">No skills found.</p>
+        ) : (
         <div className=" grid grid-cols-[repeat(auto-fill,210px)] gap-4 justify-center">
           {SkillsData.map((t, index) => (
             <CardRender key={t.id ?? index}>
               <div
-                className="w-full h-full flex flex-col justify-center items-center cursor-pointer"
+                className="w-full h-full px-4 flex flex-col justify-center items-center text-center cursor-pointer"
                 onClick={() => openEdit(t)}
               >
-                <p>{t.skill_name}</p>
-                <p>
-                  {" "}
+                <p className="text-base font-medium line-clamp-2 break-words">{t.skill_name}</p>
+                <p className="text-sm italic text-(--text-muted)">
                   ({t.attribute}/{t.difficulty})
                 </p>
+                {t.requires_specialization && (
+                  <span className="text-xs text-(--secondary-accent)">Spec. required</span>
+                )}
               </div>
               <button
                 className="absolute top-1 right-2 text-red-500 text-xs hover:text-red-300"
                 onClick={(e) => {
                   e.stopPropagation();
+                  setDeleteError(null);
                   setConfirmDelete(t.id);
                 }}
               >
@@ -174,25 +208,28 @@ export default function SkillsPage() {
             </CardRender>
           ))}
         </div>
+        )
       )}
 
       {confirmDelete !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="border border-(--secondary-color) bg-(--primary-color) p-6 flex flex-col gap-4">
             <p>Delete this skill?</p>
-            {serverError && <p className="text-sm text-red-500">{serverError}</p>}
+            {deleteError && <p className="text-sm text-red-500">{deleteError}</p>}
             <div className="flex justify-end gap-4">
               <button
                 className="border border-(--border) p-2"
-                onClick={() => { setConfirmDelete(null); setServerError(null); }}
+                disabled={isDeleting}
+                onClick={() => { setConfirmDelete(null); setDeleteError(null); }}
               >
                 Cancel
               </button>
               <button
-                className="border border-(--border) p-2 text-red-500"
+                className="border border-(--border) p-2 text-red-500 disabled:opacity-50"
+                disabled={isDeleting}
                 onClick={() => handleDelete(confirmDelete)}
               >
-                Delete
+                {isDeleting ? "Deleting..." : "Delete"}
               </button>
             </div>
           </div>
@@ -307,12 +344,17 @@ export default function SkillsPage() {
             <button
               type="button"
               onClick={closeModal}
+              disabled={isSubmitting}
               className="border border-(--border) p-2"
             >
               Cancel
             </button>
-            <button type="submit" className="border border-(--border) p-2">
-              Submit
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="border border-(--border) p-2 disabled:opacity-50"
+            >
+              {isSubmitting ? "Saving..." : "Submit"}
             </button>
           </div>
         </form>
