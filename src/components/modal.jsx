@@ -12,7 +12,7 @@ export default function Modal({ children, status, onClose }) {
     >
       {/* e.stopPropagation() is required here so clicking inside the modal doesn't trigger onClose */}
       <div
-        className="relative min-w-100 h-120 border border-(--secondary-color) bg-(--primary-color)"
+        className="relative min-w-100 min-h-120 max-h-[90vh] overflow-y-auto border border-(--secondary-color) bg-(--primary-color)"
         onClick={(e) => e.stopPropagation()}
       >
         {children}

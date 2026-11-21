@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { getSkills } from "../api/skill";
+import { useState, useEffect, useCallback } from "react";
+import { getSkills, createSkill, updateSkill, removeSkill } from "../api/skill";
 
 export function useSkills() {
   const [skills, setSkills] = useState([]);
@@ -27,5 +27,23 @@ export function useSkills() {
     setError(null);
   };
 
-  return { skills, loading, error, reloadSkill}
+  const addSkill = useCallback(async (data) => {
+    const created = await createSkill(data);
+    reloadSkill();
+    return created;
+  }, []);
+
+  const editSkill = useCallback(async (id, data) => {
+    const updated = await updateSkill(id, data);
+    reloadSkill();
+    return updated;
+  }, []);
+
+  const deleteSkill = useCallback(async (id) => {
+    const deleted = await removeSkill(id);
+    reloadSkill();
+    return deleted;
+  }, []);
+
+  return { skills, loading, error, reloadSkill, addSkill, editSkill, deleteSkill };
 }

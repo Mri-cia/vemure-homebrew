@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useTraits } from "../hooks/useTraits";
 import FilterTabs from "../elements/tabs";
-import TraitsData from "../../data/gurps_traits.json";
 import { CardRender } from "../elements/cards";
 import FloatAddButton from "../elements/float-button";
 import { Status } from "../../lib/states";
@@ -9,9 +8,9 @@ import Modal from "../components/modal";
 
 const TABS = ["Advantage", "Disadvantage", "Quirk"];
 const TYPES = ["Physical", "Mental", "Social"];
-const EMPTY_FORM = { trait_name: "", category: TABS[0], type: TYPES[0] };
+const EMPTY_FORM = { trait_name: "", category: TABS[0], type: TYPES[0], notes: "" };
 
-function validateTrait(form, existingTraits) {
+function validateTrait(form) {
   const errors = {};
   const name = form.trait_name.trim();
 
@@ -19,22 +18,20 @@ function validateTrait(form, existingTraits) {
     errors.trait_name = "Name is required.";
   } else if (name.length < 2) {
     errors.trait_name = "Name must be at least 2 characters.";
-  } else if (name.length > 50) {
-    errors.trait_name = "Name must be 50 characters or fewer.";
-  } else if (
-    existingTraits.some(
-      (t) => t.trait_name.toLowerCase() === name.toLowerCase(),
-    )
-  ) {
-    errors.trait_name = "A trait with this name already exists.";
+  } else if (name.length > 80) {
+    errors.trait_name = "Name must be 80 characters or fewer.";
   }
 
-  if (!TABS.includes(form.category)) {
+  if (!TABS.map((t) => t.toLowerCase()).includes(form.category.toLowerCase())) {
     errors.category = "Choose a valid category.";
   }
 
   if (!TYPES.includes(form.type)) {
     errors.type = "Choose a valid type.";
+  }
+
+  if (form.notes && form.notes.length > 200) {
+    errors.notes = "Notes must be 200 characters or fewer.";
   }
 
   return errors;
@@ -43,15 +40,20 @@ function validateTrait(form, existingTraits) {
 export default function TraitsPage() {
   const [tab, setTab] = useState(TABS[0]);
   const [modal, setModal] = useState(Status.CLOSED);
-  const [traits, setTraits] = useState(TraitsData);
   const [form, setForm] = useState(EMPTY_FORM);
   const [errors, setErrors] = useState({});
+  const [editingId, setEditingId] = useState(null);
+  const [serverError, setServerError] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   const {
     traits: filteredTraits,
     loading,
     error,
     reloadTraits,
+    addTrait,
+    editTrait,
+    deleteTrait,
   } = useTraits({ category: tab.toLowerCase() });
 
   const handleChange = (e) => {
@@ -64,27 +66,78 @@ export default function TraitsPage() {
     setModal(Status.CLOSED);
     setForm(EMPTY_FORM);
     setErrors({});
+    setEditingId(null);
+    setServerError(null);
   };
 
-  const handleSubmit = (e) => {
+  const openAdd = () => {
+    setForm(EMPTY_FORM);
+    setEditingId(null);
+    setServerError(null);
+    setModal(Status.OPEN);
+  };
+
+  const openEdit = (trait) => {
+    setForm({
+      trait_name: trait.trait_name,
+      category: trait.category.charAt(0).toUpperCase() + trait.category.slice(1),
+      type: trait.type,
+      notes: trait.notes || "",
+    });
+    setEditingId(trait.id);
+    setServerError(null);
+    setModal(Status.OPEN);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const found = validateTrait(form, traits);
+    const found = validateTrait(form);
     if (Object.keys(found).length > 0) {
       setErrors(found);
       return;
     }
 
-    const newTrait = {
-      trait_name: form.trait_name.trim(),
-      type: form.type,
-      category: form.category.toLowerCase(),
-      notes: "",
-    };
+    try {
+      if (editingId !== null) {
+        const original = filteredTraits.find((t) => t.id === editingId);
+        const normalizedForm = {
+          trait_name: form.trait_name.trim(),
+          type: form.type,
+          category: form.category.toLowerCase(),
+          notes: form.notes,
+        };
+        const changed = {};
+        for (const key of ["trait_name", "type", "category", "notes"]) {
+          if (normalizedForm[key] !== (original[key] ?? "")) {
+            changed[key] = normalizedForm[key];
+          }
+        }
+        if (Object.keys(changed).length > 0) {
+          await editTrait(editingId, changed);
+        }
+      } else {
+        await addTrait({
+          trait_name: form.trait_name.trim(),
+          type: form.type,
+          category: form.category.toLowerCase(),
+          notes: form.notes || undefined,
+        });
+      }
+      setTab(form.category.charAt(0).toUpperCase() + form.category.slice(1));
+      closeModal();
+    } catch (err) {
+      setServerError(err.message);
+    }
+  };
 
-    setTraits((prev) => [...prev, newTrait]);
-    setTab(form.category);
-    closeModal();
+  const handleDelete = async (id) => {
+    try {
+      await deleteTrait(id);
+      setConfirmDelete(null);
+    } catch (err) {
+      setServerError(err.message);
+    }
   };
 
   return (
@@ -113,14 +166,51 @@ export default function TraitsPage() {
         <div className="grid grid-cols-[repeat(auto-fill,210px)] gap-4 justify-center">
           {filteredTraits.map((t) => (
             <CardRender key={t.id}>
-              <p className="text-base">{t.trait_name}</p>
-              <p className="text-base italic">{t.type}</p>
+              <div
+                className="w-full h-full flex flex-col justify-center items-center cursor-pointer"
+                onClick={() => openEdit(t)}
+              >
+                <p className="text-base">{t.trait_name}</p>
+                <p className="text-base italic">{t.type}</p>
+              </div>
+              <button
+                className="absolute top-1 right-2 text-red-500 text-xs hover:text-red-300"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setConfirmDelete(t.id);
+                }}
+              >
+                ✕
+              </button>
             </CardRender>
           ))}
         </div>
       )}
 
-      <FloatAddButton onClick={() => setModal(Status.OPEN)} />
+      {confirmDelete !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="border border-(--secondary-color) bg-(--primary-color) p-6 flex flex-col gap-4">
+            <p>Delete this trait?</p>
+            {serverError && <p className="text-sm text-red-500">{serverError}</p>}
+            <div className="flex justify-end gap-4">
+              <button
+                className="border border-(--border) p-2"
+                onClick={() => { setConfirmDelete(null); setServerError(null); }}
+              >
+                Cancel
+              </button>
+              <button
+                className="border border-(--border) p-2 text-red-500"
+                onClick={() => handleDelete(confirmDelete)}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <FloatAddButton onClick={openAdd} />
 
       <Modal status={modal} onClose={closeModal}>
         <form
@@ -128,7 +218,13 @@ export default function TraitsPage() {
           noValidate
           className="w-full h-full flex flex-col justify-center px-5"
         >
-          <p className="py-5 text-2xl font-semibold">Add Trait</p>
+          <p className="py-5 text-2xl font-semibold">
+            {editingId !== null ? "Edit Trait" : "Add Trait"}
+          </p>
+
+          {serverError && (
+            <p className="text-sm text-red-500 pb-2">{serverError}</p>
+          )}
 
           <div className="flex-1 flex flex-col gap-4">
             <div className="flex flex-col">
@@ -140,6 +236,9 @@ export default function TraitsPage() {
                 value={form.trait_name}
                 onChange={handleChange}
                 placeholder="e.g. Fish"
+                minLength={2}
+                maxLength={80}
+                required
                 className="border border-(--border) p-2"
               />
               {errors.trait_name && (
@@ -184,6 +283,22 @@ export default function TraitsPage() {
               </select>
               {errors.type && (
                 <p className="text-sm text-red-500">{errors.type}</p>
+              )}
+            </div>
+
+            <div className="flex flex-col">
+              <label htmlFor="notes">Notes</label>
+              <textarea
+                name="notes"
+                id="notes"
+                value={form.notes}
+                onChange={handleChange}
+                placeholder="Optional notes"
+                maxLength={200}
+                className="border border-(--border) p-2"
+              />
+              {errors.notes && (
+                <p className="text-sm text-red-500">{errors.notes}</p>
               )}
             </div>
           </div>

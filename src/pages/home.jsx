@@ -1,4 +1,4 @@
-import { Card }from "../elements/cards";
+import { Card } from "../elements/cards";
 
 export default function HomePage() {
   const itemList = [
@@ -23,9 +23,9 @@ export default function HomePage() {
   return (
     <div className="min-h-[calc(100vh-80px)] items-start grid grid-cols-4 gap-2 px-16 content-center">
       {itemList.map((i) => (
-        <div className="h-120 flex justify-center items-center">
+        <div key={i.nama} className="h-120 flex justify-center items-center">
           <div className="relative w-[210px] h-full">
-            <Card key={i.nama} title={i.nama} description={i.desc} link={i.link} />
+            <Card title={i.nama} description={i.desc} link={i.link} />
           </div>
         </div>
       ))}

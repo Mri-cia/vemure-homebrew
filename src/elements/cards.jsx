@@ -1,14 +1,9 @@
 import { useState } from "react";
 import { ArrowRight } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Card({ title, description, link }) {
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
-
-  const toggleOpen = () => {
-    setIsOpen(!isOpen);
-  };
 
   return (
     <div
@@ -50,7 +45,7 @@ function Card({ title, description, link }) {
 function CardRender({ children }) {
   return (
     <div
-      className="h-[120px] flex flex-col justify-center items-center
+      className="relative h-[120px] flex flex-col justify-center items-center
               border border-(--border) bg-(--card-bg) text-xl cursor-pointer
               hover:brightness-110"
     >
@@ -59,4 +54,4 @@ function CardRender({ children }) {
   );
 }
 
-export { Card, CardRender};
+export { Card, CardRender };
